@@ -60,6 +60,12 @@ int main(int argc, char **argv) {
         printf("\n");
     }
 
+    /* Save the whales: */
+    free(costs);
+    for (i = 0; i < M; i++) {
+        free(coverage[i]);
+    }
+    free(coverage);
     fclose(fin);
     return 0;
 }
