@@ -24,8 +24,8 @@ char * tabu_search(problem_t * p) {
     memset(sol_coverage, 0, p->n_points * sizeof(int));
     for (i = 0; i < p->n_stations; i++) {
         sol_cost += p->stations[i].cost;
-        for (j = 0; j < p->n_points; j++) {
-          sol_coverage[j] += p->stations[i].coverage.points[j];
+        for (j = 0; j < p->stations[i].n_covered; j++) {
+            sol_coverage[ p->stations[i].coverage[j] ]++;
         }
     }
     best_cost = min_cost = max_cost = sol_cost;
@@ -40,8 +40,8 @@ char * tabu_search(problem_t * p) {
                 /* Destroy: */
                 if (solution[i]) {
                     /* Check if it will still be a solution: */
-                    for (j = 0; j < p->stations[i].coverage.n; j++) {
-                        point = p->stations[i].coverage.points[j];
+                    for (j = 0; j < p->stations[i].n_covered; j++) {
+                        point = p->stations[i].coverage[j];
                         if ((sol_coverage[point] - 1) <= 0) {
                             skip = 1;
                             break;
@@ -80,14 +80,14 @@ char * tabu_search(problem_t * p) {
         if (solution[next_flip]) {
             solution[next_flip] = 0;
             sol_cost -= p->stations[next_flip].cost;
-            for (j = 0; j < p->stations[next_flip].coverage.n; j++) {
-                sol_coverage[ p->stations[next_flip].coverage.points[j] ]--;
+            for (j = 0; j < p->stations[next_flip].n_covered; j++) {
+                sol_coverage[ p->stations[next_flip].coverage[j] ]--;
             }
         } else {
             solution[next_flip] = 1;
             sol_cost += p->stations[next_flip].cost;
-            for (j = 0; j < p->stations[next_flip].coverage.n; j++) {
-                sol_coverage[ p->stations[next_flip].coverage.points[j] ]++;
+            for (j = 0; j < p->stations[next_flip].n_covered; j++) {
+                sol_coverage[ p->stations[next_flip].coverage[j] ]++;
             }
         }
 

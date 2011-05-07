@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
                 n++;
             }
         }
+        p.stations[i].n_covered = n;
         p.stations[i].coverage =
             problem_coverage_create(p.n_points, n, coverage);
     }
@@ -72,7 +73,7 @@ int main(int argc, char **argv) {
 
     /* Save the whales: */
     for (i = 0; i < p.n_stations; i++) {
-        free(p.stations[i].coverage.points);
+        free(p.stations[i].coverage);
     }
     free(p.stations);
     free(coverage);
