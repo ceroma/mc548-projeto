@@ -41,6 +41,7 @@ char * tabu_search(int **coverage, double *costs, int N, int M) {
                     for (j = 0; j < N; j++) {
                         if ((sol_coverage[j] - coverage[i][j]) <= 0) {
                             skip = 1;
+                            break;
                         }
                     }
                     if (skip) continue;
@@ -55,6 +56,7 @@ char * tabu_search(int **coverage, double *costs, int N, int M) {
                     for (j = 0; j < N; j++) {
                         if ((sol_coverage[j] + coverage[i][j]) <= 0) {
                             skip = 1;
+                            break;
                         }
                     }
                     if (skip) continue;
