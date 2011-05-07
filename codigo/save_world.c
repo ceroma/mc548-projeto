@@ -52,20 +52,20 @@ int main(int argc, char **argv) {
     }
 
     /* Save the world: */
-    solution = tabu_search(coverage, costs, N, M);
+    solution = tabu_search(&p);
     d = 0;
     sol_cost = 0.0;
     for (i = 0; i < p.n_stations; i++) {
         if (solution[i]) {
             d++;
-            sol_cost += costs[i];
+            sol_cost += p.stations[i].cost;
         }
     }
     printf("Valor: %lf\n", sol_cost);
     printf("Total: %d\n", d);
     for (i = 0; i < p.n_stations; i++) {
         if (solution[i]) {
-            printf("S_%d\n", i);
+            printf("S_%d\n", i+1);
         }
     }
     free(solution);

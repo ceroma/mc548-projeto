@@ -1,1 +1,2 @@
-char * tabu_search(int **coverage, double *costs, int N, int M);
+
+char * tabu_search(problem_t * p);
