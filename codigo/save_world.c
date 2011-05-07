@@ -11,12 +11,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "problem.h"
+
 int main(int argc, char **argv) {
     char c;
-    int i, p;
     FILE *fin;
-    double *costs;
-    int M, N, **coverage;
+    problem_t p;
+    int i, d, n, *coverage;
 
     /* Open input file: */
     if (argc < 2) {
@@ -27,44 +28,44 @@ int main(int argc, char **argv) {
     }
 
     /* Read the world: */
-    fscanf(fin, "N %d\n", &N);
-    fscanf(fin, "M %d\n", &M);
-    costs = (double *) malloc(M * sizeof(double));
-    coverage = (int **) malloc(M * sizeof(int*));
-    for (i = 0; i < M; i++) {
-        fscanf(fin, "%*s %lf%c ", &costs[i], &c); 
-        coverage[i] = (int *) malloc(N * sizeof(int));
-        memset(coverage[i], 0, N * sizeof(int));
-        p = 0;
+    fscanf(fin, "N %d\n", &p.n_points);
+    fscanf(fin, "M %d\n", &p.n_stations);
+    p.stations = (station_t *) malloc(p.n_stations * sizeof(station_t));
+    coverage = (int *) malloc((p.n_points + 1) * sizeof(int));
+    for (i = 0; i < p.n_stations; i++) {
+        fscanf(fin, "%*s %lf%c ", &p.stations[i].cost, &c);
+        memset(coverage, 0, (p.n_points + 1) * sizeof(int));
+        d = n = 0;
         while ((c = getc(fin)) != '\n') {
             if (isdigit(c)) {
-                p = p * 10 + (c - '0');
+                d = d * 10 + (c - '0');
             } else {
-                coverage[i][p-1] = 1;
-                p = 0;
+                coverage[d] = 1;
+                d = 0;
+                n++;
             }
         }
+        p.stations[i].coverage =
+            problem_coverage_create(p.n_points, n, coverage);
     }
 
     /* Save the world: */
     // heuristic();
-    printf("N: %d\n", N);
-    printf("M: %d\n", M);
-    for (i = 0; i < M; i++) {
-        printf("S%d %lf ", i+1, costs[i]);
-        for (p = 0; p < N; p++) {
-            if (coverage[i][p]) {
-                printf("%d ", p+1);
-            }
+    printf("N: %d\n", p.n_points);
+    printf("M: %d\n", p.n_stations);
+    for (i = 0; i < p.n_stations; i++) {
+        printf("S%d %lf ", i+1, p.stations[i].cost);
+        for (d = 0; d < p.stations[i].coverage.n; d++) {
+            printf("%d ", p.stations[i].coverage.points[d]);
         }
         printf("\n");
     }
 
     /* Save the whales: */
-    free(costs);
-    for (i = 0; i < M; i++) {
-        free(coverage[i]);
+    for (i = 0; i < p.n_stations; i++) {
+        free(p.stations[i].coverage.points);
     }
+    free(p.stations);
     free(coverage);
     fclose(fin);
     return 0;
