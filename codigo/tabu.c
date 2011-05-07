@@ -14,14 +14,14 @@ char * tabu_search(problem_t * p) {
     int *memory = (int *) malloc(p->n_stations * sizeof(int));
     char *solution = (char *) malloc(p->n_stations * sizeof(char));
     char *best_solution = (char *) malloc(p->n_stations * sizeof(char));
-    int *sol_coverage = (int *) malloc(p->n_points * sizeof(int));
+    int *sol_coverage = (int *) malloc((p->n_points + 1) * sizeof(int));
     time_t t0 = time(NULL); 
 
     /* Building all stations is a valid solution: */
     memset(solution, 1, p->n_stations);
     memset(best_solution, 1, p->n_stations);
     memset(memory, 0, p->n_stations * sizeof(int));
-    memset(sol_coverage, 0, p->n_points * sizeof(int));
+    memset(sol_coverage, 0, (p->n_points + 1) * sizeof(int));
     for (i = 0; i < p->n_stations; i++) {
         sol_cost += p->stations[i].cost;
         for (j = 0; j < p->stations[i].n_covered; j++) {
@@ -32,6 +32,7 @@ char * tabu_search(problem_t * p) {
 
     /* Tabu search: */
     while ((time(NULL) - t0) < MAX_TIME) {
+        next_flip = -1;
         min_cost = max_cost;
         /* Choose station to be built/destroyed: */
         for (i = 0; i < p->n_stations; i++) { 
@@ -56,8 +57,8 @@ char * tabu_search(problem_t * p) {
                 /* Build: */
                 } else {
                     /* Check if it will be a solution: */
-                    for (j = 0; j < p->stations[i].coverage.n; j++) {
-                        point = p->stations[i].coverage.points[j];
+                    for (j = 0; j < p->stations[i].n_covered; j++) {
+                        point = p->stations[i].coverage[j];
                         if ((sol_coverage[point] + 1) <= 0) {
                             skip = 1;
                             break;
@@ -75,6 +76,7 @@ char * tabu_search(problem_t * p) {
                 memory[i]--;
             }
         }
+        if (next_flip == -1) continue;
 
         /* Destroy/build i-th station: */
         if (solution[next_flip]) {

@@ -42,9 +42,9 @@ int main(int argc, char **argv) {
             if (isdigit(c)) {
                 d = d * 10 + (c - '0');
             } else {
+                n += (coverage[d]) ? 0 : 1;
                 coverage[d] = 1;
                 d = 0;
-                n++;
             }
         }
         p.stations[i].n_covered = n;
