@@ -6,15 +6,14 @@
  * tion is 1 if the i-th point is covered by the station. N is the number of
  * points in the world and n is the number of covered points.
  */
-coverage_t problem_coverage_create(int N, int n, int * points) {
-    int i;
-    coverage_t coverage;
+int * problem_coverage_create(int N, int n, int * points) {
+    int i, k = 0;
+    int * coverage;
 
-    coverage.n = 0;
-    coverage.points = (int *) malloc(n * sizeof(int));
+    coverage = (int *) malloc(n * sizeof(int));
     for (i = 0; i <= N; i++) {
         if (points[i]) {
-            coverage.points[coverage.n++] = i;
+            coverage[k++] = i;
         }
     }
     return coverage;

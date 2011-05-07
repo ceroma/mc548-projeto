@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
                 n++;
             }
         }
+        p.stations[i].n_covered = n;
         p.stations[i].coverage =
             problem_coverage_create(p.n_points, n, coverage);
     }
@@ -55,15 +56,15 @@ int main(int argc, char **argv) {
     printf("M: %d\n", p.n_stations);
     for (i = 0; i < p.n_stations; i++) {
         printf("S%d %lf ", i+1, p.stations[i].cost);
-        for (d = 0; d < p.stations[i].coverage.n; d++) {
-            printf("%d ", p.stations[i].coverage.points[d]);
+        for (d = 0; d < p.stations[i].n_covered; d++) {
+            printf("%d ", p.stations[i].coverage[d]);
         }
         printf("\n");
     }
 
     /* Save the whales: */
     for (i = 0; i < p.n_stations; i++) {
-        free(p.stations[i].coverage.points);
+        free(p.stations[i].coverage);
     }
     free(p.stations);
     free(coverage);
