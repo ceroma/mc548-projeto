@@ -12,11 +12,13 @@
 #include <string.h>
 
 #include "problem.h"
+#include "tabu.h"
 
 int main(int argc, char **argv) {
-    char c;
     FILE *fin;
     problem_t p;
+    double sol_cost;
+    char c, *solution;
     int i, d, n, *coverage;
 
     /* Open input file: */
@@ -50,16 +52,23 @@ int main(int argc, char **argv) {
     }
 
     /* Save the world: */
-    // heuristic();
-    printf("N: %d\n", p.n_points);
-    printf("M: %d\n", p.n_stations);
+    solution = tabu_search(coverage, costs, N, M);
+    d = 0;
+    sol_cost = 0.0;
     for (i = 0; i < p.n_stations; i++) {
-        printf("S%d %lf ", i+1, p.stations[i].cost);
-        for (d = 0; d < p.stations[i].coverage.n; d++) {
-            printf("%d ", p.stations[i].coverage.points[d]);
+        if (solution[i]) {
+            d++;
+            sol_cost += costs[i];
         }
-        printf("\n");
     }
+    printf("Valor: %lf\n", sol_cost);
+    printf("Total: %d\n", d);
+    for (i = 0; i < p.n_stations; i++) {
+        if (solution[i]) {
+            printf("S_%d\n", i);
+        }
+    }
+    free(solution);
 
     /* Save the whales: */
     for (i = 0; i < p.n_stations; i++) {
