@@ -8,15 +8,17 @@
 #define MAX_TIME 60
 
 /* Perform a Greedy Randomized Adaptive Search on problem p. */
-char * grasp(problem_t * p) {
+solution_t * grasp(problem_t * p) {
+    int i;
     double best_cost, sol_cost = 0.0;
-    char *solution, *gr_solution, *best_solution;
+    solution_t *solution, *gr_solution, *best_solution;
     time_t t0 = time(NULL);
 
     /* Initialize empty solutions: */
-    best_solution = (char *) malloc(p->n_stations * sizeof(char));
+    best_solution = problem_solution_create(p->n_stations);
     for (i = 0; i < p->n_stations; i++) {
-        best_cost += p->stations[i].cost;
+        best_solution->plan[i] = 1;
+        best_solution->cost += p->stations[i].cost;
     }
 
     /* GRASP: */
@@ -25,18 +27,18 @@ char * grasp(problem_t * p) {
         gr_solution = greedy_randomized_solution(p);
 
         /* Local search: */
-        solution = local_search(gr_solution);
-        sol_cost = X;
+        solution = local_search(p, gr_solution);
 
         /* Compare with best solution: */
-        if (sol_cost < best_cost) {
-            best_cost = sol_cost;
-            memcpy(best_solution, solution, p->n_stations);
+        if (solution->cost < best_solution->cost) {
+            problem_solution_destroy(best_solution);
+            best_solution = solution;
         }
-        
     }
 
-    free(solution);
+    if (solution != best_solution) {
+        free(solution);
+    }
 
     return best_solution;
 }

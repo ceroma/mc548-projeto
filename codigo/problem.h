@@ -26,7 +26,23 @@ int * problem_coverage_create(int N, int n, int * points);
  * stations: list of possible stations.
  */
 typedef struct {
-  int n_points;
-  int n_stations;
-  station_t * stations;
+    int n_points;
+    int n_stations;
+    station_t * stations;
 } problem_t;
+
+/*
+ * Struct that represents a solution of the problem:
+ * cost: cost of building proposed stations;
+ * plan: 1 if i-th station should be built, 0 otherwise.
+ */
+typedef struct {
+    double cost;
+    char * plan;
+} solution_t;
+
+/* Create an empty solution, given the number M of stations. */
+solution_t * problem_solution_create(int M);
+
+/* Destroy (free memory of) given solution pointer. */
+void problem_solution_destroy(solution_t * solution);

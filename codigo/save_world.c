@@ -15,10 +15,10 @@
 #include "tabu.h"
 
 int main(int argc, char **argv) {
+    char c;
     FILE *fin;
     problem_t p;
-    double sol_cost;
-    char c, *solution;
+    solution_t * solution;
     int i, d, n, *coverage;
 
     /* Open input file: */
@@ -55,21 +55,19 @@ int main(int argc, char **argv) {
     /* Save the world: */
     solution = tabu_search(&p);
     d = 0;
-    sol_cost = 0.0;
     for (i = 0; i < p.n_stations; i++) {
-        if (solution[i]) {
+        if (solution->plan[i]) {
             d++;
-            sol_cost += p.stations[i].cost;
         }
     }
-    printf("Valor: %lf\n", sol_cost);
+    printf("Valor: %lf\n", solution->cost);
     printf("Total: %d\n", d);
     for (i = 0; i < p.n_stations; i++) {
-        if (solution[i]) {
+        if (solution->plan[i]) {
             printf("S_%d\n", i+1);
         }
     }
-    free(solution);
+    problem_solution_destroy(solution);
 
     /* Save the whales: */
     for (i = 0; i < p.n_stations; i++) {

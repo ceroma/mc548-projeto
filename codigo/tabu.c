@@ -9,27 +9,28 @@
 #define MEM_INIT 400
 
 /* Perform a Tabu Search on problem p. */
-char * tabu_search(problem_t * p) {
+solution_t * tabu_search(problem_t * p) {
+    double min_cost, max_cost;
     int i, j, point, next_flip, skip;
-    double min_cost, max_cost, best_cost, sol_cost = 0.0;
+    solution_t *solution, *best_solution;
     int *memory = (int *) malloc(p->n_stations * sizeof(int));
-    char *solution = (char *) malloc(p->n_stations * sizeof(char));
-    char *best_solution = (char *) malloc(p->n_stations * sizeof(char));
     int *sol_coverage = (int *) malloc((p->n_points + 1) * sizeof(int));
     time_t t0 = time(NULL);
 
     /* Building all stations is a valid solution: */
-    memset(solution, 1, p->n_stations);
-    memset(best_solution, 1, p->n_stations);
+    solution = problem_solution_create(p->n_stations);
+    best_solution = problem_solution_create(p->n_stations);
+    memset(solution->plan, 1, p->n_stations);
+    memset(best_solution->plan, 1, p->n_stations);
     memset(memory, 0, p->n_stations * sizeof(int));
     memset(sol_coverage, 0, (p->n_points + 1) * sizeof(int));
     for (i = 0; i < p->n_stations; i++) {
-        sol_cost += p->stations[i].cost;
+        solution->cost += p->stations[i].cost;
         for (j = 0; j < p->stations[i].n_covered; j++) {
             sol_coverage[ p->stations[i].coverage[j] ]++;
         }
     }
-    best_cost = min_cost = max_cost = sol_cost;
+    best_solution->cost = min_cost = max_cost = solution->cost;
 
     /* Tabu search: */
     while ((time(NULL) - t0) < MAX_TIME) {
@@ -40,7 +41,7 @@ char * tabu_search(problem_t * p) {
             skip = 0;
             if (!memory[i]) {
                 /* Destroy: */
-                if (solution[i]) {
+                if (solution->plan[i]) {
                     /* Check if it will still be a solution: */
                     for (j = 0; j < p->stations[i].n_covered; j++) {
                         point = p->stations[i].coverage[j];
@@ -51,9 +52,9 @@ char * tabu_search(problem_t * p) {
                     }
                     if (skip) continue;
                     /* Check if it is least costly neighbour: */
-                    if ((sol_cost - p->stations[i].cost) < min_cost) {
+                    if ((solution->cost - p->stations[i].cost) < min_cost) {
                         next_flip = i;
-                        min_cost = sol_cost - p->stations[i].cost;
+                        min_cost = solution->cost - p->stations[i].cost;
                     }
                 /* Build: */
                 } else {
@@ -67,9 +68,9 @@ char * tabu_search(problem_t * p) {
                     }
                     if (skip) continue;
                     /* Check if it is least costly neighbour: */
-                    if ((sol_cost + p->stations[i].cost) < min_cost) {
+                    if ((solution->cost + p->stations[i].cost) < min_cost) {
                         next_flip = i;
-                        min_cost = sol_cost - p->stations[i].cost;
+                        min_cost = solution->cost - p->stations[i].cost;
                     }
                 }
             } else {
@@ -80,30 +81,30 @@ char * tabu_search(problem_t * p) {
 
         /* Destroy/build i-th station: */
         memory[next_flip] = MEM_INIT;
-        if (solution[next_flip]) {
-            solution[next_flip] = 0;
-            sol_cost -= p->stations[next_flip].cost;
+        if (solution->plan[next_flip]) {
+            solution->plan[next_flip] = 0;
+            solution->cost -= p->stations[next_flip].cost;
             for (j = 0; j < p->stations[next_flip].n_covered; j++) {
                 sol_coverage[ p->stations[next_flip].coverage[j] ]--;
             }
         } else {
-            solution[next_flip] = 1;
-            sol_cost += p->stations[next_flip].cost;
+            solution->plan[next_flip] = 1;
+            solution->cost += p->stations[next_flip].cost;
             for (j = 0; j < p->stations[next_flip].n_covered; j++) {
                 sol_coverage[ p->stations[next_flip].coverage[j] ]++;
             }
         }
 
         /* Compare with best solution: */
-        if (sol_cost < best_cost) {
-            best_cost = sol_cost;
-            memcpy(best_solution, solution, p->n_stations);
+        if (solution->cost < best_solution->cost) {
+            best_solution->cost = solution->cost;
+            memcpy(best_solution->plan, solution->plan, p->n_stations);
         }
     }
 
     free(memory);
-    free(solution);
     free(sol_coverage);
+    problem_solution_destroy(solution);
 
     return best_solution;
 }
