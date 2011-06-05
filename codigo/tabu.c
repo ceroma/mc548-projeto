@@ -8,6 +8,7 @@
 #define MAX_TIME 60
 #define MEM_INIT 400
 
+/* Perform a Tabu Search on problem p. */
 char * tabu_search(problem_t * p) {
     int i, j, point, next_flip, skip;
     double min_cost, max_cost, best_cost, sol_cost = 0.0;
