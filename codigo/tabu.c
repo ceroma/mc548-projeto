@@ -12,14 +12,13 @@
 solution_t * tabu_search(problem_t * p) {
     double min_cost, max_cost;
     int i, j, point, next_flip, skip;
-    solution_t *solution, *best_solution;
     int *memory = (int *) malloc(p->n_stations * sizeof(int));
     int *sol_coverage = (int *) malloc((p->n_points + 1) * sizeof(int));
+    solution_t *solution = problem_solution_create(p->n_stations);
+    solution_t *best_solution = problem_solution_create(p->n_stations);
     time_t t0 = time(NULL);
 
     /* Building all stations is a valid solution: */
-    solution = problem_solution_create(p->n_stations);
-    best_solution = problem_solution_create(p->n_stations);
     memset(solution->plan, 1, p->n_stations);
     memset(best_solution->plan, 1, p->n_stations);
     memset(memory, 0, p->n_stations * sizeof(int));
@@ -70,7 +69,7 @@ solution_t * tabu_search(problem_t * p) {
                     /* Check if it is least costly neighbour: */
                     if ((solution->cost + p->stations[i].cost) < min_cost) {
                         next_flip = i;
-                        min_cost = solution->cost - p->stations[i].cost;
+                        min_cost = solution->cost + p->stations[i].cost;
                     }
                 }
             } else {

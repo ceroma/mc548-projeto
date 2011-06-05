@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "problem.h"
+#include "grasp.h"
 #include "tabu.h"
 
 int main(int argc, char **argv) {
@@ -53,7 +54,7 @@ int main(int argc, char **argv) {
     }
 
     /* Save the world: */
-    solution = tabu_search(&p);
+    solution = grasp(&p);
     d = 0;
     for (i = 0; i < p.n_stations; i++) {
         if (solution->plan[i]) {
