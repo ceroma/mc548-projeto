@@ -6,7 +6,7 @@
 #include "problem.h"
 
 #define MAX_TIME 60
-#define MEM_INIT 5
+#define MEM_INIT 400
 
 char * tabu_search(problem_t * p) {
     int i, j, point, next_flip, skip;
@@ -15,7 +15,7 @@ char * tabu_search(problem_t * p) {
     char *solution = (char *) malloc(p->n_stations * sizeof(char));
     char *best_solution = (char *) malloc(p->n_stations * sizeof(char));
     int *sol_coverage = (int *) malloc((p->n_points + 1) * sizeof(int));
-    time_t t0 = time(NULL); 
+    time_t t0 = time(NULL);
 
     /* Building all stations is a valid solution: */
     memset(solution, 1, p->n_stations);
@@ -35,7 +35,7 @@ char * tabu_search(problem_t * p) {
         next_flip = -1;
         min_cost = max_cost;
         /* Choose station to be built/destroyed: */
-        for (i = 0; i < p->n_stations; i++) { 
+        for (i = 0; i < p->n_stations; i++) {
             skip = 0;
             if (!memory[i]) {
                 /* Destroy: */
@@ -71,7 +71,6 @@ char * tabu_search(problem_t * p) {
                         min_cost = sol_cost - p->stations[i].cost;
                     }
                 }
-                memory[i] = MEM_INIT;
             } else {
                 memory[i]--;
             }
@@ -79,6 +78,7 @@ char * tabu_search(problem_t * p) {
         if (next_flip == -1) continue;
 
         /* Destroy/build i-th station: */
+        memory[next_flip] = MEM_INIT;
         if (solution[next_flip]) {
             solution[next_flip] = 0;
             sol_cost -= p->stations[next_flip].cost;
