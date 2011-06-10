@@ -68,7 +68,7 @@ solution_t * greedy_randomized_solution(problem_t * p) {
         /* RGC - choose one candidate: */
         rand_prob = (max_prob * ((double) rand())) / ((double) RAND_MAX);
         for (i = 0; i < rcl_size; i++) {
-            if (rand_prob - prob[i] < 0.0) {
+            if (rand_prob - prob[i] <= 0.0) {
                 station = rcl[i];
                 break;
             }
