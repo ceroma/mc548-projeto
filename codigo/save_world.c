@@ -36,21 +36,23 @@ int main(int argc, char **argv) {
     p.stations = (station_t *) malloc(p.n_stations * sizeof(station_t));
     coverage = (int *) malloc((p.n_points + 1) * sizeof(int));
     for (i = 0; i < p.n_stations; i++) {
-        fscanf(fin, "%*s %lf%c ", &p.stations[i].cost, &c);
+        p.stations[i].name = problem_station_name_read(fin);
+        fscanf(fin, "%lf%c ", &p.stations[i].cost, &c);
         memset(coverage, 0, (p.n_points + 1) * sizeof(int));
         d = n = 0;
-        while ((c = getc(fin)) != '\n') {
+        do {
+            c = getc(fin);
             if (isdigit(c)) {
                 d = d * 10 + (c - '0');
             } else {
-                n += (coverage[d]) ? 0 : 1;
+                n += ((d == 0) || (coverage[d] != 0)) ? 0 : 1;
                 coverage[d] = 1;
                 d = 0;
             }
-        }
+        } while (c != '\n');
         p.stations[i].n_covered = n;
         p.stations[i].coverage =
-            problem_coverage_create(p.n_points, n, coverage);
+            problem_station_coverage_create(p.n_points, n, coverage);
     }
 
     /* Save the world: */
@@ -65,13 +67,14 @@ int main(int argc, char **argv) {
     printf("Total: %d\n", d);
     for (i = 0; i < p.n_stations; i++) {
         if (solution->plan[i]) {
-            printf("S_%d\n", i+1);
+            printf("%s\n", p.stations[i].name);
         }
     }
     problem_solution_destroy(solution);
 
     /* Save the whales: */
     for (i = 0; i < p.n_stations; i++) {
+        free(p.stations[i].name);
         free(p.stations[i].coverage);
     }
     free(p.stations);

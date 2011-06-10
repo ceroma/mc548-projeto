@@ -2,22 +2,27 @@
 
 /* 
  * Struct that represents an station:
+ * name: station's name;
  * cost: cost to build the station;
  * n_covered: number of points covered by the station;
  * coverage: points covered by the station.
  */
 typedef struct {
+    char * name;
     double cost;
     int n_covered;
     int * coverage;
 } station_t;
+
+/* Allocate memory and read station's name from file. */
+char * problem_station_name_read(FILE * fin);
 
 /* 
  * Create an ordered list of covered points from a vector where the i-th posi-
  * tion is 1 if the i-th point is covered by the station. N is the number of
  * points in the world and n is the number of covered points.
  */
-int * problem_coverage_create(int N, int n, int * points);
+int * problem_station_coverage_create(int N, int n, int * points);
 
 /* 
  * Struct that represents an instance of the problem:
