@@ -135,15 +135,6 @@ void local_search(problem_t * p, solution_t * solution) {
                 }
             /* Build: */
             } else {
-                /* Check if it will be a solution: */
-                for (j = 0; j < p->stations[i].n_covered; j++) {
-                    point = p->stations[i].coverage[j];
-                    if ((sol_coverage[point] + 1) <= 0) {
-                        skip = 1;
-                        break;
-                    }
-                }
-                if (skip) continue;
                 /* Check if it is least costly neighbour: */
                 if ((solution->cost + p->stations[i].cost) < min_cost) {
                     next_flip = i;
@@ -179,8 +170,8 @@ void local_search(problem_t * p, solution_t * solution) {
 /* Perform a Greedy Randomized Adaptive Search on problem p. */
 solution_t * grasp(problem_t * p) {
     int i;
+    time_t t0;
     solution_t *solution, *best_solution;
-    time_t t0 = time(NULL);
 
     /* Initialize empty solutions: */
     best_solution = problem_solution_create(p->n_stations);
@@ -190,6 +181,7 @@ solution_t * grasp(problem_t * p) {
     }
 
     /* GRASP: */
+    t0 = time(NULL);
     while ((time(NULL) - t0) < MAX_TIME) {
         /* Greedy randomized solution: */
         solution = greedy_randomized_solution(p);
