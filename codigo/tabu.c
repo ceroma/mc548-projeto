@@ -6,7 +6,7 @@
 #include "problem.h"
 
 #define MAX_TIME 60
-#define MEM_INIT 400
+#define MEM_INIT 10
 
 /* Perform a Tabu Search on problem p. */
 solution_t * tabu_search(problem_t * p) {

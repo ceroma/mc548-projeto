@@ -8,7 +8,7 @@
 #define MAX(a,b) (a > b) ? a : b;
 #define MIN(a,b) (a < b) ? a : b;
 
-#define ALPHA    0.6
+#define ALPHA    0.2
 #define MAX_TIME 60
 
 /* Construct a greedy-randomized solution. */
